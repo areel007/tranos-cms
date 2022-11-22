@@ -15,6 +15,8 @@ app.get('/', (req, res) => {
 app.post('/', (req, res) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
+    host: 'smtp.gmail.com',
+    secure: false,
     auth: {
       user: 'delzmiyaki@gmail.com',
       pass: 'gwnqbqiyjwtmnces',
@@ -25,7 +27,10 @@ app.post('/', (req, res) => {
     from: req.body.email,
     to: 'delzmiyaki@gmail.com',
     subject: `Message from ${req.body.email}: ${req.body.subject}`,
-    text: `${req.body.message}`
+    text: {
+      message: `${req.body.message}`,
+      phone: `${req.body.phone}`
+    }
   }
 
   transporter.sendMail(mailOptions, (error, info) => {
