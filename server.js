@@ -2,12 +2,14 @@ const nodemailer = require("nodemailer");
 const express = require("express");
 const multer = require("multer");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors());
 
-let email, subject, message, phone, path;
+let name, age, code, phoneNumber, email, yearsOfExperience, designation, path;
 
 let Storage = multer.diskStorage({
   destination: (req, file, callback) => {
@@ -37,52 +39,69 @@ app.post("/", (req, res) => {
       console.log(err);
       return res.end("Something went wrong");
     } else {
+      subject = "Tranos Careers Page";
+      name = req.body.name;
+      age = req.body.age;
+      code = req.body.code;
+      phoneNumber = req.body.phoneNumber;
       email = req.body.email;
-      subject = req.body.subject;
-      message = req.body.message;
-      phone = req.body.phone;
+      yearsOfExperience = req.body.yearsOfExperience;
+      designation = req.body.designation;
       path = req.file.path;
 
+      // const transporter = nodemailer.createTransport({
+      //   service: "gmail",
+      //   host: "smtp.gmail.com",
+      //   secure: false,
+      //   auth: {
+      //     user: "delzmiyaki@gmail.com",
+      //     pass: "gwnqbqiyjwtmnces",
+      //   },
+      // });
+
       const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        host: 'smtp.gmail.com',
-        secure: false,
+        // service: "ahead-bydesign.com",
+        host: "smtp.ahead-bydesign.com",
+        port: 465,
+        secure: true,
         auth: {
-          user: 'delzmiyaki@gmail.com',
-          pass: 'gwnqbqiyjwtmnces',
+          user: "sunday@ahead-bydesign.com",
+          pass: "BamiSunday1988"
         }
       })
 
       const mailOptions = {
         from: req.body.email,
-        to: 'delzmiyaki@gmail.com',
+        to: "sunday@ahead-bydesign.com",
         subject,
-        text:
-        `
-        message: ${req.body.message}
-        phone: ${req.body.phone}
-        email: ${req.body.email}
+        text: `
+        name: ${name}
+        age: ${age}
+        code ${code}
+        phone number: ${phoneNumber}
+        email: ${email}
+        years of experience: ${yearsOfExperience}
+        designation: ${designation}
+
         `,
         attachments: [
           {
-            path
-          }
-        ]
-      }
+            path,
+          },
+        ],
+      };
 
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
           console.log(error);
-          res.send('Error')
+          res.send("Error");
         } else {
-          console.log('Email sent ' + info.response);
-          res.send('Success')
+          console.log("Email sent " + info.response);
+          res.send("Success");
         }
-      })
-
+      });
     }
   });
-
 });
 
 app.listen(PORT, () => console.log("App running on " + PORT));
